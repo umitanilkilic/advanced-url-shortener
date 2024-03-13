@@ -1,5 +1,4 @@
-[﻿![GitHub](https://img.shields.io/github/license/umitanilkilic/advanced-url-shortener)](https://img.shields.io/github/license/umitanilkilic/advanced-url-shortener
-)
+![GitHub License](https://img.shields.io/github/license/umitanilkilic/advanced-url-shortener)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/umitanilkilic/advanced-url-shortener)
 [![Go Report Card](https://goreportcard.com/badge/github.com/umitanilkilic/advanced-url-shortener)](https://goreportcard.com/badge/github.com/umitanilkilic/advanced-url-shortener)
 
