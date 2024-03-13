@@ -46,7 +46,7 @@ func LoadDatabaseConfig() (*DatabaseConfig, error) {
 	return &DatabaseConfig{RedisServerConfig: redisServerConfig, PostgresServerConfig: postgresServerConfig}, nil
 }
 
-func LoadRateLimiterConfig() (*FiberConfig, error) {
+func AppConfig() (*FiberConfig, error) {
 	err := godotenv.Load("app.env")
 	if err != nil {
 		panic("Error loading ratelimiter.env file")

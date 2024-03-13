@@ -13,12 +13,20 @@ func init() {
 }
 
 func main() {
-	cfg, _ := config.LoadDatabaseConfig()
+	dbConfig, err := config.LoadDatabaseConfig()
+	if err != nil {
+		panic("Error loading database config")
+	}
+
+	appConfig, err := config.AppConfig()
+	if err != nil {
+		panic("Error loading app config")
+	}
 
 	// Define a context for the application
 	ctx := context.TODO()
 
-	helper.StartStoreServices(ctx, *cfg)
+	helper.StartStoreServices(ctx, *dbConfig)
 
-	urlshortener.RunUrlShortener()
+	urlshortener.RunUrlShortener(*appConfig)
 }
