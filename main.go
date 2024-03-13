@@ -26,7 +26,10 @@ func main() {
 	// Define a context for the application
 	ctx := context.TODO()
 
-	helper.StartStoreServices(ctx, *dbConfig)
+	err = helper.StartStoreServices(ctx, *dbConfig)
+	if err != nil {
+		panic("Error starting store services")
+	}
 
 	urlshortener.RunUrlShortener(*appConfig)
 }

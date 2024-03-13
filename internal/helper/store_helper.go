@@ -3,8 +3,10 @@ package helper
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/umitanilkilic/advanced-url-shortener/internal/config"
+	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
 	"github.com/umitanilkilic/advanced-url-shortener/internal/platform/cache/redis_client"
 	"github.com/umitanilkilic/advanced-url-shortener/internal/platform/database/pg_client"
 )
@@ -42,12 +44,24 @@ func StartStoreServices(ctx context.Context, cfg config.DatabaseConfig) error {
 func RetrieveLongUrl(shortUrlID *string) (string, error) {
 	url, err := rd.RetrieveLongUrl(defaultContext, *shortUrlID)
 	if err != nil {
-		fmt.Println("error while retrieving from redis: ", err)
+		log.Println("url not found on redis: ", err)
 		url, err = pg.RetrieveLongUrl(defaultContext, *shortUrlID)
 		if err != nil {
-			return "", fmt.Errorf("error while retrieving from postgres: %v", err)
+			return "", fmt.Errorf("url not found on postgres & redis: %v", err)
 		}
 		rd.SaveMapping(defaultContext, &url)
 	}
 	return url.Long, nil
+}
+
+func StoreUrl(url model.ShortURL) error {
+	err := pg.SaveMapping(defaultContext, &url)
+	if err != nil {
+		return fmt.Errorf("error while saving to postgres: %v", err)
+	}
+	err = rd.SaveMapping(defaultContext, &url)
+	if err != nil {
+		return fmt.Errorf("error while saving to redis: %v", err)
+	}
+	return nil
 }
