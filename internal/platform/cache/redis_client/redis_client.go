@@ -2,25 +2,31 @@ package redis_client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
 )
 
-type CacheService struct {
-	redisClient *redis.Client
+type RedisServerConfig struct {
+	Host     string
+	Port     string
+	Password string
+	DB       int
 }
 
-var cacheService = &CacheService{}
-var ctx = context.Background()
+type RedisClient struct {
+	client *redis.Client
+}
 
-func ConnectToRedis(redisAddress string, redisPort string, redisPassword string, dbNo int) (*CacheService, error) {
+func NewRedisClient(ctx context.Context, cfg *RedisServerConfig) (*RedisClient, error) {
 
 	rClient := redis.NewClient(&redis.Options{
-		Addr:     redisAddress + ":" + redisPort,
-		Password: redisPassword,
-		DB:       dbNo,
+		Addr:     cfg.Host + ":" + cfg.Port,
+		Password: cfg.Password,
+		DB:       cfg.DB,
 	})
 
 	pong, err := rClient.Ping(ctx).Result()
@@ -29,19 +35,20 @@ func ConnectToRedis(redisAddress string, redisPort string, redisPassword string,
 	}
 	fmt.Println(pong)
 
-	cacheService.redisClient = rClient
-	return cacheService, nil
+	return &RedisClient{client: rClient}, nil
+}
+func (c *RedisClient) Close() error {
+	return c.client.Close()
 }
 
-func SaveMapping(urlStruct model.ShortURL) error {
+func (c *RedisClient) SaveMapping(ctx context.Context, urlStruct *model.ShortURL) error {
 
-	///err := cacheService.redisClient.Set(ctx, shortUrl, originalUrl, 0).Err()
-	data := map[string]interface{}{
-		"ID":         urlStruct.ID,
-		"LongUrl":    urlStruct.Long,
-		"CreateDate": urlStruct.CreatedAt,
+	shortUrlJson, err := json.Marshal(urlStruct)
+	if err != nil {
+		return err
 	}
-	err := cacheService.redisClient.HMSet(ctx, "sUrl", data).Err()
+
+	err = c.client.Set(ctx, strconv.Itoa(urlStruct.ID), shortUrlJson, 0).Err()
 
 	if err != nil {
 		return fmt.Errorf("fail cannot save: %v, ID: %v, originalUrl: %v", err, urlStruct.ID, urlStruct.Long)
@@ -49,10 +56,18 @@ func SaveMapping(urlStruct model.ShortURL) error {
 	return nil
 }
 
-func RetrieveLongUrl(shortUrl string) (string, error) {
-	result, err := cacheService.redisClient.Get(ctx, shortUrl).Result()
+func (c *RedisClient) RetrieveLongUrl(ctx context.Context, shortUrlID string) (model.ShortURL, error) {
+	result, err := c.client.Get(ctx, shortUrlID).Result()
+
 	if err != nil {
-		return "", fmt.Errorf("fail to retrieve long url: %v", err)
+		return model.ShortURL{}, fmt.Errorf("fail to retrieve long url: %v", err)
 	}
-	return result, nil
+
+	var model model.ShortURL = model.ShortURL{}
+	err = json.Unmarshal([]byte(result), &model)
+	if err != nil {
+		return model, fmt.Errorf("fail to unmarshal: %v", err)
+	}
+
+	return model, nil
 }
