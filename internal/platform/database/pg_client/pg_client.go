@@ -9,24 +9,13 @@ import (
 	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
 )
 
-type PostgresServerConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DB       string
-	SSLMode  string
-	Table    string
-}
-
 type PostgresClient struct {
 	db *sqlx.DB
 }
 
-func NewPostgresClient(ctx context.Context, cfg *PostgresServerConfig) (*PostgresClient, error) {
-	connStr := fmt.Sprintf("user=%v dbname=%v sslmode=%v password=%v host=%v port=%v", cfg.User, cfg.DB, cfg.SSLMode, cfg.Password, cfg.Host, cfg.Port)
-
-	db, err := sqlx.Open("postgres", connStr)
+func NewPostgresClient(ctx context.Context, connectionString string) (*PostgresClient, error) {
+	fmt.Println("PostgresClient: ", connectionString)
+	db, err := sqlx.Open("postgres", connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to Postgres: %w", err)
 	}

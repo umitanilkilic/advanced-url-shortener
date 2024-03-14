@@ -1,35 +1,46 @@
 package main
 
 import (
-	"context"
+	"log"
+	"os"
+	"strings"
 
 	"github.com/umitanilkilic/advanced-url-shortener/cmd/urlshortener"
-	"github.com/umitanilkilic/advanced-url-shortener/internal/config"
 	"github.com/umitanilkilic/advanced-url-shortener/internal/helper"
 )
 
-func init() {
+/* var rd *redis_client.RedisClient
+var pg *pg_client.PostgresClient
 
-}
+var ctx = context.Background() */
 
 func main() {
-	dbConfig, err := config.LoadDatabaseConfig()
-	if err != nil {
-		panic("Error loading database config")
+	cfg := make(map[string]string)
+	for _, e := range os.Environ() {
+		if i := strings.Index(e, "="); i >= 0 {
+			cfg[e[:i]] = e[i+1:]
+		}
 	}
 
-	appConfig, err := config.AppConfig()
+	err := helper.RunDatabases(cfg["REDIS_CONNECTION_STRING"], cfg["POSTGRES_CONNECTION_STRING"])
 	if err != nil {
-		panic("Error loading app config")
+		log.Fatal(err)
 	}
 
-	// Define a context for the application
-	ctx := context.TODO()
-
-	err = helper.StartStoreServices(ctx, *dbConfig)
+	err = urlshortener.RunUrlShortener(cfg)
 	if err != nil {
-		panic("Error starting store services")
+		log.Fatal(err)
 	}
 
-	urlshortener.RunUrlShortener(*appConfig)
+	/* 	godotenv.Load()
+	   	err := helper.RunDatabases(os.Getenv("REDIS_CONNECTION_STRING"), os.Getenv("POSTGRES_CONNECTION_STRING"))
+	   	if err != nil {
+	   		panic(err)
+	   	}
+	   	_ = urlshortener.RunUrlShortener(map[string]string{
+	   		"MAX_RATE_LIMIT":        os.Getenv("MAX_RATE_LIMIT"),
+	   		"RATE_LIMIT_EXPIRATION": os.Getenv("RATE_LIMIT_EXPIRATION"),
+	   		"APP_ADDRESS":           os.Getenv("APP_ADDRESS"),
+	   		"APP_PORT":              os.Getenv("APP_PORT"),
+	   	}) */
 }
