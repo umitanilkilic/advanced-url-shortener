@@ -88,6 +88,9 @@ For disabling the redirection page, you can remove the 67th line from `urlshorte
 ### URL Shortener Service
 You can configure the URL shortener service by modifying app.env and database.env files.
 
+## Todo
+* Redis expiration time optimization
+
 ### Contributing
 
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
