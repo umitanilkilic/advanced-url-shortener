@@ -19,7 +19,6 @@ This is a advanced URL shortener service implemented in Go using the Fiber web f
 * Statistics for shortened urls
 
 * Refactoring for better performance
-* Refactoring doceker-compose file for better performance
 
 
 
