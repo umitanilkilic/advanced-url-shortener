@@ -14,7 +14,6 @@ type PostgresClient struct {
 }
 
 func NewPostgresClient(ctx context.Context, connectionString string) (*PostgresClient, error) {
-	fmt.Println("PostgresClient: ", connectionString)
 	db, err := sqlx.Open("postgres", connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to Postgres: %w", err)

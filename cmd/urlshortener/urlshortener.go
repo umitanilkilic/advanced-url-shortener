@@ -75,6 +75,6 @@ func GetShortUrl(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	///return c.Redirect(longUrl) Uncomment this line and remove the next line to redirect directly to the long url
+	///return c.Redirect(longUrl) // Uncomment this line and remove the next line to redirect directly to the long url
 	return c.Render("redirect", fiber.Map{"LongURL": longUrl})
 }

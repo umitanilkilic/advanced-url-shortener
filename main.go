@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -15,6 +16,12 @@ var pg *pg_client.PostgresClient
 var ctx = context.Background() */
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered. Error:\n", r)
+		}
+	}()
+
 	cfg := make(map[string]string)
 	for _, e := range os.Environ() {
 		if i := strings.Index(e, "="); i >= 0 {
@@ -24,13 +31,15 @@ func main() {
 
 	err := helper.RunDatabases(cfg["REDIS_CONNECTION_STRING"], cfg["POSTGRES_CONNECTION_STRING"])
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("db error: %v", err)
 	}
+	fmt.Println("databases are running")
 
 	err = urlshortener.RunUrlShortener(cfg)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	fmt.Println("url shortener is running")
 
 	/* 	godotenv.Load()
 	   	err := helper.RunDatabases(os.Getenv("REDIS_CONNECTION_STRING"), os.Getenv("POSTGRES_CONNECTION_STRING"))
