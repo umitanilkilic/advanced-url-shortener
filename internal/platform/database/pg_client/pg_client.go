@@ -9,24 +9,12 @@ import (
 	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
 )
 
-type PostgresServerConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DB       string
-	SSLMode  string
-	Table    string
-}
-
 type PostgresClient struct {
 	db *sqlx.DB
 }
 
-func NewPostgresClient(ctx context.Context, cfg *PostgresServerConfig) (*PostgresClient, error) {
-	connStr := fmt.Sprintf("user=%v dbname=%v sslmode=%v password=%v host=%v port=%v", cfg.User, cfg.DB, cfg.SSLMode, cfg.Password, cfg.Host, cfg.Port)
-
-	db, err := sqlx.Open("postgres", connStr)
+func NewPostgresClient(ctx context.Context, connectionString string) (*PostgresClient, error) {
+	db, err := sqlx.Open("postgres", connectionString)
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to Postgres: %w", err)
 	}
@@ -46,7 +34,7 @@ func (c *PostgresClient) Close() error {
 func (p *PostgresClient) SaveMapping(ctx context.Context, urlStruct *model.ShortURL) error {
 
 	insertStatement := "INSERT INTO shorturl (url_id ,long_url, created_at) VALUES ($1, $2, $3)"
-	_, err := p.db.ExecContext(ctx, insertStatement, urlStruct.ID, urlStruct.Long, urlStruct.CreatedAt)
+	_, err := p.db.ExecContext(ctx, insertStatement, urlStruct.UrlID, urlStruct.Long, urlStruct.CreatedAt)
 
 	return err
 }
