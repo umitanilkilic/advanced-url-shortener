@@ -34,7 +34,7 @@ func (c *PostgresClient) Close() error {
 func (p *PostgresClient) SaveMapping(ctx context.Context, urlStruct *model.ShortURL) error {
 
 	insertStatement := "INSERT INTO shorturl (url_id ,long_url, created_at) VALUES ($1, $2, $3)"
-	_, err := p.db.ExecContext(ctx, insertStatement, urlStruct.ID, urlStruct.Long, urlStruct.CreatedAt)
+	_, err := p.db.ExecContext(ctx, insertStatement, urlStruct.UrlID, urlStruct.Long, urlStruct.CreatedAt)
 
 	return err
 }

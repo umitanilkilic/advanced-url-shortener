@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.shorturl (
-    url_id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
+    url_id VARCHAR(255),
     long_url VARCHAR(255),
     created_at TIMESTAMP WITHOUT TIME ZONE
 );

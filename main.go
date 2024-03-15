@@ -16,6 +16,7 @@ var pg *pg_client.PostgresClient
 var ctx = context.Background() */
 
 func main() {
+	fmt.Println("starting the application")
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered. Error:\n", r)
@@ -33,7 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("db error: %v", err)
 	}
-	fmt.Println("databases are running")
+	fmt.Println("connected to cache and database servers successfully")
 
 	err = urlshortener.RunUrlShortener(cfg)
 	if err != nil {

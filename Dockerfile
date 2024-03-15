@@ -1,5 +1,11 @@
 FROM golang:latest
 
+# Install dockerize
+RUN apt-get update && apt-get install -y wget
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-linux-amd64-v0.6.1.tar.gz
+
 # Set destination for COPY
 WORKDIR /app
 
@@ -12,14 +18,8 @@ RUN go mod download
 COPY . .
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
+RUN CGO_ENABLED=0 GOOS=linux go build -o /pikacu
+EXPOSE 8080
 
-# Optional:
-# To bind to a TCP port, runtime parameters must be supplied to the docker command.
-# But we can document in the Dockerfile what ports
-# the application is going to listen on by default.
-# https://docs.docker.com/engine/reference/builder/#expose
-# EXPOSE 8080
-
-# Run
-CMD ["/docker-gs-ping"]
+# Run using dockerize to wait for PostgreSQL
+CMD dockerize -wait tcp://postgres:5432 -timeout 60s /pikacu

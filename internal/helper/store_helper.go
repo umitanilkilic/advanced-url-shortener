@@ -28,9 +28,7 @@ func RunDatabases(rdConnStr string, pgConnStr string) error {
 	if err != nil {
 		return fmt.Errorf("error while creating redis client: %v", err)
 	}
-	if rd == nil {
-		panic("rd is nil")
-	}
+	fmt.Println("redis client created")
 
 	pg, err = pg_client.NewPostgresClient(defaultContext, pgConnStr)
 	if err != nil {

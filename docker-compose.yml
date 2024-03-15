@@ -1,27 +1,11 @@
 version: '3'
 
 services:
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-      - postgres
-    environment:
-      REDIS_CONNECTION_STRING: "redis://localhost:6379/0"
-      POSTGRES_CONNECTION_STRING: "postgresql://postgres:postgres@localhost:5432/urls_database?sslmode=disable"
-      MAX_RATE_LIMIT: 10
-      RATE_LIMIT_EXPIRATION: 60
-      APP_PORT: 8080
-      APP_ADDRESS: "localhost"
-    network_mode: host
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
-
 
   postgres:
     build:
@@ -30,7 +14,22 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: urls_database
+      POSTGRES_SSLMODE: "disable"
 
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      REDIS_CONNECTION_STRING: "redis://redis:6379/0"
+      POSTGRES_CONNECTION_STRING: "host=postgres port=5432 dbname=urls_database user=postgres password=postgres sslmode=disable"
+      MAX_RATE_LIMIT: 10
+      RATE_LIMIT_EXPIRATION: 60
+      APP_PORT: 8080
+      APP_ADDRESS: "0.0.0.0"

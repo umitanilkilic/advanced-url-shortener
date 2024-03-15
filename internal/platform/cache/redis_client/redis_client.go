@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
@@ -41,10 +40,10 @@ func (c *RedisClient) SaveMapping(ctx context.Context, urlStruct *model.ShortURL
 		return err
 	}
 
-	err = c.client.Set(ctx, strconv.Itoa(urlStruct.ID), shortUrlJson, 0).Err()
+	err = c.client.Set(ctx, urlStruct.UrlID, shortUrlJson, 0).Err()
 
 	if err != nil {
-		return fmt.Errorf("fail cannot save: %v, ID: %v, originalUrl: %v", err, urlStruct.ID, urlStruct.Long)
+		return fmt.Errorf("fail cannot save: %v, ID: %v, originalUrl: %v", err, urlStruct.UrlID, urlStruct.Long)
 	}
 	return nil
 }
