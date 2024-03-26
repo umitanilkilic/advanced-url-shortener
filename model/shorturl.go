@@ -1,11 +1,19 @@
 package model
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type ShortURL struct {
-	Active    bool   `json:"active" db:"active"`
-	UrlID     string `json:"url_id" db:"url_id"`
-	Name      string `json:"name" db:"name"`
-	Long      string `json:"long_url" db:"long_url"`
-	CreatedAt string `json:"created_at" db:"created_at"`
-	UpdatedAt string `json:"updated_at" db:"updated_at"`
-	ExpiresAt string `json:"expires_at" db:"expires_at"`
+	gorm.Model
+	CreatedBy uint `json:"created_by"`
+	Active    bool `gorm:"default:true" json:"active"`
+	//Todo: Change UrlID to uint
+	UrlID     string    `gorm:"uniqueIndex;not null;size:255;" json:"url_id"`
+	Name      string    `gorm:"not null;" json:"name"`
+	Long      string    `gorm:"not null;" json:"long"`
+	ExpiresAt time.Time `json:"expires_at"`
+	UrlStats
 }

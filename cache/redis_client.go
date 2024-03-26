@@ -1,4 +1,4 @@
-package redis_client
+package cache
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/umitanilkilic/advanced-url-shortener/internal/model"
+	"github.com/umitanilkilic/advanced-url-shortener/model"
 )
 
 type RedisClient struct {
@@ -40,7 +40,7 @@ func (c *RedisClient) SaveMapping(ctx context.Context, urlStruct *model.ShortURL
 		return err
 	}
 
-	err = c.client.Set(ctx, urlStruct.UrlID, shortUrlJson, 0).Err()
+	err = c.client.Set(ctx, (urlStruct.UrlID), shortUrlJson, 0).Err()
 
 	if err != nil {
 		return fmt.Errorf("fail cannot save: %v, ID: %v, originalUrl: %v", err, urlStruct.UrlID, urlStruct.Long)

@@ -24,6 +24,5 @@
       - Mobile vs Desktop
 
 # Todo
-- [ ] JWT Authentication
+- [x] JWT Authentication
 - [ ] Dockerize the application
-- [ ] Add tests
