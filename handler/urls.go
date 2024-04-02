@@ -45,7 +45,6 @@ func GetUrls(c *fiber.Ctx) error {
 
 // / Example request: {"name": "example", "long": "https://example.com", "alias": "example", "expires_at": "2022-01-01T00:00:00Z"}
 func CreateUrl(c *fiber.Ctx) error {
-	//TODO: createurl method must be updated to use the new model & must be use own request struct
 	type request struct {
 		Name      string    `json:"name"`
 		Long      string    `json:"long"`
@@ -161,17 +160,9 @@ func UpdateUrl(c *fiber.Ctx) error {
 		})
 	}
 
-	var url model.ShortURL
-
-	if result := database.DB.Where("url_id = ? OR alias = ?", urlIdentifier, urlIdentifier).First(&url); result.Error != nil {
-		if result.Error.Error() == "record not found" {
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "Not found", "errors": "Url not found"})
-		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Database error",
-			"errors":  result.Error.Error,
-		})
+	url, statusCode := getShortURLByAliasOrId(urlIdentifier)
+	if url == (model.ShortURL{}) {
+		return c.Status(fiber.StatusNotFound).JSON(statusCode)
 	}
 
 	userId := getUserID(c)
@@ -184,6 +175,7 @@ func UpdateUrl(c *fiber.Ctx) error {
 		})
 	}
 
+	/// FIXME: Fix this
 	if !validateName(input.Name) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Invalid request", "errors": "Name are required"})
 	}
@@ -250,17 +242,9 @@ func DeleteUrl(c *fiber.Ctx) error {
 		})
 	}
 
-	var url model.ShortURL
-
-	if result := database.DB.Where("url_id = ? OR alias = ?", urlIdentifier, urlIdentifier).First(&url); result.Error != nil {
-		if result.Error.Error() == "record not found" {
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "Not found", "errors": "Url not found"})
-		}
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Database error",
-			"errors":  result.Error.Error,
-		})
+	url, statusCode := getShortURLByAliasOrId(urlIdentifier)
+	if url == (model.ShortURL{}) {
+		return c.Status(fiber.StatusNotFound).JSON(statusCode)
 	}
 
 	userId := getUserID(c)
@@ -285,28 +269,6 @@ func DeleteUrl(c *fiber.Ctx) error {
 		"status":  "success",
 		"message": "Url deleted",
 	})
-}
-
-func validateURL(originalURL string) bool {
-	_, err := url.Parse(originalURL)
-	return err == nil
-}
-
-func validateName(name string) bool {
-	return len(name) >= 3
-}
-
-func validateTime(expireTime time.Time) bool {
-	return expireTime.After(time.Now())
-}
-
-func validateAlias(alias string) (valid bool) {
-	response := database.DB.Where("alias = ?", alias).First(&model.ShortURL{})
-	if response.RowsAffected == 0 {
-		valid = true
-	}
-
-	return
 }
 
 func BulkDeleteUrls(c *fiber.Ctx) error {
@@ -354,10 +316,62 @@ func BulkDeleteUrls(c *fiber.Ctx) error {
 		"status":  "success",
 		"message": "Urls deleted",
 	})
-
 }
 
 func getUserID(c *fiber.Ctx) (userId float64) {
 	userId = c.Locals("user").(*jwt.Token).Claims.(jwt.MapClaims)["sub"].(float64)
 	return
+}
+
+func validateURL(originalURL string) bool {
+	_, err := url.Parse(originalURL)
+	return err == nil
+}
+
+func validateName(name string) bool {
+	return len(name) >= 3
+}
+
+func validateTime(expireTime time.Time) bool {
+	return expireTime.After(time.Now())
+}
+
+func validateAlias(alias string) (valid bool) {
+	response := database.DB.Where("alias = ?", alias).First(&model.ShortURL{})
+	if response.RowsAffected == 0 {
+		valid = true
+	}
+
+	return
+}
+
+func getShortURLByAliasOrId(urlIdentifier string) (model.ShortURL, fiber.Map) {
+	var url model.ShortURL
+	// Check if the urlIdentifier is an integer or not
+	if !isAlias(&urlIdentifier) {
+		if database.DB.Where("url_id = ?", urlIdentifier).First(&url).Error != nil {
+			return model.ShortURL{}, fiber.Map{
+				"status":  "error",
+				"message": "Not found",
+				"errors":  "Url not found",
+			}
+		}
+		return url, fiber.Map{}
+	}
+	if database.DB.Where("alias = ?", urlIdentifier).First(&url).Error != nil {
+		return model.ShortURL{}, fiber.Map{
+			"status":  "error",
+			"message": "Not found",
+			"errors":  "Url not found",
+		}
+	}
+
+	return url, nil
+}
+
+func isAlias(identifier *string) bool {
+	if _, err := strconv.Atoi(*identifier); err != nil {
+		return true
+	}
+	return false
 }
