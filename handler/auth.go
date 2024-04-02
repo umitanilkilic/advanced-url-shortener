@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/umitanilkilic/advanced-url-shortener/config"
 	"github.com/umitanilkilic/advanced-url-shortener/database"
 	"github.com/umitanilkilic/advanced-url-shortener/model"
 	"golang.org/x/crypto/bcrypt"
@@ -20,9 +21,9 @@ type UserCredentials struct {
 	Password string `json:"password"`
 }
 
-/// Todo: Email & password validation should be done in the frontend
-/// Todo: Email verification system should be implemented
-/// Todo: Password reset system should be implemented
+/// TODO: Email & password validation should be done in the frontend
+/// TODO: Email verification system should be implemented
+/// TODO: Password reset system should be implemented
 
 /// Register function is simply creating a new user in the database
 
@@ -91,11 +92,12 @@ func Login(c *fiber.Ctx) error {
 	// Set token claims
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
-	claims["user_id"] = user.ID
+	claims["sub"] = user.ID
 
-	// Sign the token with a secret
-	//TODO: This secret should be in an environment variable
-	signedToken, err := token.SignedString([]byte("secret"))
+	// Sign the token with a authenticationKey
+	//TODO: That way of getting the secret key is not be the best way to do it in a production environment
+	authenticationKey := (*config.Config)["AUTH_SECRET"]
+	signedToken, err := token.SignedString([]byte(authenticationKey))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}

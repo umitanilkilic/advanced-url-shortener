@@ -6,9 +6,9 @@ import (
 )
 
 // SecureEndpoint protect routes
-func SecureEndpoint() func(*fiber.Ctx) error {
+func SecureEndpoint(authSecret *string) func(*fiber.Ctx) error {
 	return jwtware.New(jwtware.Config{
-		SigningKey:   jwtware.SigningKey{Key: []byte("secret")},
+		SigningKey:   jwtware.SigningKey{Key: []byte(*authSecret)},
 		ErrorHandler: handleJWTError,
 	})
 }

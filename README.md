@@ -23,6 +23,5 @@
       - Device info of the clicks 
       - Mobile vs Desktop
 
-# Todo
-- [x] JWT Authentication
+# TODO
 - [ ] Dockerize the application

@@ -1,12 +1,9 @@
 package helper
 
 import (
-	"strconv"
-
 	"github.com/google/uuid"
 )
 
-func GenerateUrlID() (string, error) {
-
-	return strconv.Itoa(int(uuid.New().ID())), nil
+func GenerateUrlID() (uint32, error) {
+	return uuid.New().ID(), nil
 }

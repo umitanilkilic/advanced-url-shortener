@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 
+	"github.com/umitanilkilic/advanced-url-shortener/config"
 	"github.com/umitanilkilic/advanced-url-shortener/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -12,8 +13,8 @@ var DB *gorm.DB
 
 func SetupDatabaseConnection() error {
 	var err error
-	// Todo: Move the connection string to the environment variables
-	DB, err = gorm.Open(postgres.Open("host=localhost user=postgres password=adam1234 dbname=postgres port=5432 sslmode=disable"))
+	connStr := (*config.Config)["DATABASE_URL"]
+	DB, err = gorm.Open(postgres.Open(connStr))
 	if err != nil {
 		return errors.New("failed to connect database")
 	}
@@ -25,7 +26,7 @@ func SetupDatabaseConnection() error {
 }
 
 func ExecuteDatabaseMigrations() error {
-	return DB.AutoMigrate(&model.User{}, &model.ShortURL{})
+	return DB.AutoMigrate(&model.User{}, &model.ShortURL{}, &model.UrlStats{})
 }
 
 func RetrieveLongUrl(shortUrlID string) (model.ShortURL, error) {
