@@ -49,30 +49,6 @@
     }
     ```
 
-## Auth API
-
-### Login
-- **POST** `/api/auth/login`
-  - Authenticate user.
-  - Request Body:
-    ```json
-    {
-        "email": "umitanilkilic@gmail.com",
-        "password": "pikacu123"
-    }
-    ```
-
-### Register
-- **POST** `/api/auth/register`
-  - Register a new user.
-  - Request Body:
-    ```json
-    {
-        "email": "umitanilkilic@gmail.com",
-        "password": "pikacu123"
-    }
-    ```
-
 ### URL Management
 
 #### Get URL Details
