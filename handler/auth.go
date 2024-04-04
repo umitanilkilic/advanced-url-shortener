@@ -95,7 +95,6 @@ func Login(c *fiber.Ctx) error {
 	claims["sub"] = user.ID
 
 	// Sign the token with a authenticationKey
-	//TODO: That way of getting the secret key is not be the best way to do it in a production environment
 	authenticationKey := (*config.Config)["AUTH_SECRET"]
 	signedToken, err := token.SignedString([]byte(authenticationKey))
 	if err != nil {

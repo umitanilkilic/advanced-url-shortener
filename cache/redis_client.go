@@ -13,8 +13,9 @@ import (
 
 var Client *redis.Client
 
+var ctx = context.Background()
+
 func InitializeRedisClient() error {
-	ctx := context.Background()
 	connectionString := (*config.Config)["REDIS_URL"]
 
 	opt, err := redis.ParseURL(connectionString)
@@ -36,7 +37,7 @@ func Close() error {
 	return Client.Close()
 }
 
-func SaveMapping(ctx context.Context, urlStruct *model.ShortURL) error {
+func SaveMapping(urlStruct *model.ShortURL) error {
 
 	shortUrlJson, err := json.Marshal(urlStruct)
 	if err != nil {
@@ -51,7 +52,7 @@ func SaveMapping(ctx context.Context, urlStruct *model.ShortURL) error {
 	return nil
 }
 
-func RetrieveLongUrl(ctx context.Context, shortUrlID string) (model.ShortURL, error) {
+func RetrieveLongUrl(shortUrlID string) (model.ShortURL, error) {
 	result, err := Client.Get(ctx, shortUrlID).Result()
 
 	if err != nil {

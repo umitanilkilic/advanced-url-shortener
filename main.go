@@ -23,9 +23,9 @@ func main() {
 
 	/// Setup the cache connection
 	//err = cache.InitializeRedisClient()
-	if err != nil {
-		panic(err)
-	}
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	/// Start the server
 	appAddress := (*config.Config)["APP_ADDRESS"]

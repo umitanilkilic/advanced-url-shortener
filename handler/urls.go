@@ -18,7 +18,9 @@ func GetUrls(c *fiber.Ctx) error {
 	var limit int
 	var err error
 	if limitQueryParam == "" {
-		limit = 10
+		limit = 20
+	} else if limitQueryParam == "all" {
+		limit = -1
 	} else {
 		limit, err = strconv.Atoi(limitQueryParam)
 	}
@@ -44,6 +46,7 @@ func GetUrls(c *fiber.Ctx) error {
 }
 
 // / Example request: {"name": "example", "long": "https://example.com", "alias": "example", "expires_at": "2022-01-01T00:00:00Z"}
+// / Example response: {"status": "success", "message": "Url created", "data": {"ID":1,"CreatedAt":"2021-09-26T14:00:00Z","UpdatedAt":"2021-09-26T14:00:00Z","
 func CreateUrl(c *fiber.Ctx) error {
 	type request struct {
 		Name      string    `json:"name"`
@@ -111,7 +114,7 @@ func CreateUrl(c *fiber.Ctx) error {
 
 	/// Check if alias is empty
 	if input.Alias == "" {
-		url.Alias = strconv.Itoa(int(url.UrlID)) /// TODO: Change this to generated alias
+		url.Alias = strconv.Itoa(int(url.UrlID)) /// TODO: Alias generation
 	}
 
 	/// Add url to database
@@ -137,6 +140,7 @@ func CreateUrl(c *fiber.Ctx) error {
 	})
 }
 
+// / Example request: {"active": true, "alias": "example", "name": "example", "long": "https://example.com", "expires_at": "2022-01-01T00:00:00Z"}
 func UpdateUrl(c *fiber.Ctx) error {
 	type request struct {
 		Active    bool      `json:"active"`
@@ -271,6 +275,7 @@ func DeleteUrl(c *fiber.Ctx) error {
 	})
 }
 
+// / Example request: {"urls_ids": ["url_id1", "url_id2"]}
 func BulkDeleteUrls(c *fiber.Ctx) error {
 	type request struct {
 		UrlIds []string `json:"urls_ids"`

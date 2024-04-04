@@ -1,7 +1,6 @@
 package model
 
 import (
-	"net"
 	"time"
 )
 
@@ -18,6 +17,7 @@ type UrlStats struct {
 	ActivityTime time.Time    `json:"activity_time"`
 	ActivityType ActivityType `json:"activity_type"`
 	TimeZone     string       `json:"time_zone"`
-	IpAddress    net.IP       `json:"ip_address"`
+	IpAddress    string       `json:"ip_address"`
 	Location     string       `json:"location"`
+	UserAgent    string       `json:"user_agent"`
 }
