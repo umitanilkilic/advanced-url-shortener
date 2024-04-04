@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch test function",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "program": "${workspaceFolder}/main.go",
+        "env": {
+            "APP_ADDRESS": "localhost:3000",
+            "DATABASE_URL": "postgresql://postgres:adam1234@localhost:5432/postgres"
+        }
+      }
+    ]
+  }
