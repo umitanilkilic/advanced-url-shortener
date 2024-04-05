@@ -34,13 +34,13 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Invalid request", "errors": err.Error()})
 	}
 	/// Validate the input
-	if isValidEmail(input.Email) || input.Password == "" {
+	if !isValidEmail(input.Email) || input.Password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Email and password are required"})
 	}
 
 	// Check if user exists
 	_, err := findUserByEmail(input.Email)
-	if errors.Is(err, errUserNotFound) {
+	if !errors.Is(err, errUserNotFound) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "User already exists"})
 	} else if err != nil && !errors.Is(err, errUserNotFound) {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Database error"})
@@ -57,7 +57,7 @@ func Register(c *fiber.Ctx) error {
 	// Create user
 	database.DB.Create(&input)
 
-	return c.JSON(fiber.Map{"status": "success", "message": "User created", "data": input})
+	return c.JSON(fiber.Map{"status": "success", "message": "User created"})
 }
 
 func Login(c *fiber.Ctx) error {
