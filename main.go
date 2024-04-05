@@ -4,9 +4,9 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/umitanilkilic/advanced-url-shortener/api/router"
 	"github.com/umitanilkilic/advanced-url-shortener/config"
 	"github.com/umitanilkilic/advanced-url-shortener/database"
-	"github.com/umitanilkilic/advanced-url-shortener/router"
 )
 
 func main() {
