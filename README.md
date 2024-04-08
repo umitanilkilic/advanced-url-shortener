@@ -2,6 +2,7 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/umitanilkilic/advanced-url-shortener)
 [![Go Report Card](https://goreportcard.com/badge/github.com/umitanilkilic/advanced-url-shortener)](https://goreportcard.com/report/github.com/umitanilkilic/advanced-url-shortener)
 
+# ⚠️ This project is currently under development. However, the current version is functional.
 # URL SHORTENER - SPECS
 
 - [ ] A sign up page
@@ -107,9 +108,17 @@
   - Get statistics of a specific URL.
 
 
-# ENVIRONMENT VARIABLES
+# Environment Variables
 
-Write me
+This application relies on the following environment variables for proper functioning:
+
+- **APP_ADDRESS:** Specifies the address where the application is accessible.
+- **DATABASE_URL:** Specifies the URL for the database connection. (Postgres)
+- **AUTH_SECRET:** Specifies the secret key used for authentication and session management.
+- **REDIS_URL:** Specifies the URL for the Redis database connection. 
+
+Please ensure that these environment variables are correctly configured for the successful operation of the application.
+
 
 
 # TODO
