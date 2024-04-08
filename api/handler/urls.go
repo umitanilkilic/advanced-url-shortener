@@ -15,8 +15,12 @@ import (
 func GetUrls(c *fiber.Ctx) error {
 	userId := getUserID(c)
 	limitQueryParam := c.Query("limit")
+	pageQueryParam := c.Query("page")
+
+	var page int
 	var limit int
 	var err error
+
 	if limitQueryParam == "" {
 		limit = 20
 	} else if limitQueryParam == "all" {
@@ -24,17 +28,24 @@ func GetUrls(c *fiber.Ctx) error {
 	} else {
 		limit, err = strconv.Atoi(limitQueryParam)
 	}
+	if pageQueryParam == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(pageQueryParam)
+	}
+
+	offset := (page - 1) * limit
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Invalid request",
-			"errors":  "Limit must be a number",
+			"errors":  "Limit and page must be integer values",
 		})
 	}
 
 	var urls []model.ShortURL
-	if result := database.DB.Where("created_by = ?", userId).Limit(limit).Find(&urls); result.Error != nil {
+	if result := database.DB.Where("created_by = ?", userId).Limit(limit).Offset(offset).Find(&urls); result.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  "error",
 			"message": "Database error",

@@ -27,6 +27,9 @@ func main() {
 	//	panic(err)
 	//}
 
+	///TEST
+	app.Static("/", "./view")
+
 	/// Start the server
 	appAddress := (*config.Config)["APP_ADDRESS"]
 	log.Fatal(app.Listen(appAddress))
