@@ -61,6 +61,7 @@
   - Retrieve URLs with pagination.
   - Query Parameters:
     - `limit`: Number of URLs per page (default: 20).
+    - `page`: Page number (default: 1).
 
 #### Create URL
 - **POST** `/api/auth/urls/`
